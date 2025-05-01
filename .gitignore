@@ -1,0 +1,52 @@
+# Build output
+/build/
+/bin/
+/obj/
+/out/
+/CMakeFiles/
+/CMakeCache.txt
+Makefile
+cmake_install.cmake
+
+# Compiled binaries
+*.exe
+*.out
+*.app
+*.dll
+*.so
+*.dylib
+*.a
+*.lib
+*.o
+*.obj
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# Logs and temporary files
+*.log
+*.tmp
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# GLAD-generated files (optional, if you generate locally but don't want in repo)
+/glad/
+
+# If you download libraries into project folder (optional)
+external/
+vendor/
+
+# If using premake/cmake-generated files
+*.make
+*.ninja
+compile_commands.json
+
+
+# Folders
+/include
