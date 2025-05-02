@@ -22,6 +22,15 @@ glm::mat4 model(1.f);
 glm::mat4 view(1.f);
 glm::mat4 projection;
 
+
+glm::vec3 camPos(0.f, 0.f, 3.f);
+glm::vec3 camFront(0.f, 0.f, -1.f);
+glm::vec3 camUp(0.f, 1.f, 0.f);
+float deltaTime = 0;
+float lastFrame = 0;
+float camSpeed = 2.5f;
+
+
 int main() {
 
     // Initialize GLFW
@@ -155,6 +164,10 @@ void viewportCallback(GLFWwindow* window, int width, int height) {
 void mainLoop(GLFWwindow* window, VertexArray& vao, Shader& shader, Texture* textures) {
     while(!glfwWindowShouldClose(window)) {
 
+        float currentTime = glfwGetTime();
+        deltaTime = currentTime - lastFrame;
+        lastFrame = currentTime; 
+
         // Inputs
         keyboardInputs(window);
 
@@ -162,6 +175,10 @@ void mainLoop(GLFWwindow* window, VertexArray& vao, Shader& shader, Texture* tex
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Update
+
+        view = glm::lookAt(camPos, camPos + camFront, camUp);
+        shader.setMat4fv("view", view);
+
         vao.use();
         shader.use();
         for(unsigned int i = 0; i < 2; i++) {
@@ -178,5 +195,17 @@ void mainLoop(GLFWwindow* window, VertexArray& vao, Shader& shader, Texture* tex
 void keyboardInputs(GLFWwindow* window) {
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
-    }
+    };
+    if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        camPos += camFront * camSpeed * deltaTime;
+    };
+    if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+        camPos -= camFront * camSpeed * deltaTime;
+    };
+    if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        camPos -= glm::normalize(glm::cross(camFront, camUp)) * deltaTime * camSpeed;
+    };
+    if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        camPos += glm::normalize(glm::cross(camFront, camUp)) * deltaTime * camSpeed;
+    };
 }
