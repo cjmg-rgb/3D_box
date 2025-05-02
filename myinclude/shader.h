@@ -7,6 +7,9 @@
 #include "string"
 
 #include "glad/glad.h"
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 
 class Shader {
     unsigned int ID;
@@ -16,6 +19,9 @@ class Shader {
     public:
         Shader(const char* vFile, const char* fFile);
         void use();
+
+        void setInt(const char* name, int value);
+        void setMat4fv(const char* name, glm::mat4 value);
 };
 
 #endif
