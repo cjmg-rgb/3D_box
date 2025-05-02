@@ -16,12 +16,12 @@ GLFWwindow* creatwWindowAndMakeContext(int width, int height, const char* title)
 void viewportCallback(GLFWwindow* window, int width, int height);
 void mainLoop(GLFWwindow* window, VertexArray& vao, Shader& shader, Texture* textures);
 void keyboardInputs(GLFWwindow* window);
+void mouseCallback(GLFWwindow* window, double xIn, double yIn);
 
 
 glm::mat4 model(1.f);
 glm::mat4 view(1.f);
 glm::mat4 projection;
-
 
 glm::vec3 camPos(0.f, 0.f, 3.f);
 glm::vec3 camFront(0.f, 0.f, -1.f);
@@ -29,6 +29,13 @@ glm::vec3 camUp(0.f, 1.f, 0.f);
 float deltaTime = 0;
 float lastFrame = 0;
 float camSpeed = 2.5f;
+
+float lastMouseX = 400.f;
+float lastMouseY = 300.f;
+float yaw = -90.f;
+float pitch = 0.f;
+bool firstLook = true;
+
 
 
 int main() {
@@ -152,6 +159,8 @@ GLFWwindow* creatwWindowAndMakeContext(int width, int height, const char* title)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetCursorPosCallback(window, mouseCallback);
 
     glfwMakeContextCurrent(window);
     return window;
@@ -208,4 +217,35 @@ void keyboardInputs(GLFWwindow* window) {
     if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
         camPos += glm::normalize(glm::cross(camFront, camUp)) * deltaTime * camSpeed;
     };
+}
+
+void mouseCallback(GLFWwindow* window, double xIn, double yIn) {
+    if(firstLook) {
+        lastMouseX = xIn;
+        lastMouseY = yIn;
+        firstLook = false;
+    }
+    
+    float offsetX = xIn - lastMouseX;
+    float offsetY = lastMouseY - yIn;
+
+    lastMouseX = xIn;
+    lastMouseY = yIn;
+
+    float mouseSensitivity = .1f;
+    offsetX *= mouseSensitivity;
+    offsetY *= mouseSensitivity;
+
+    yaw += offsetX;
+    pitch += offsetY;
+
+    if(pitch < -89.f) pitch = -89.f;
+    if(pitch >  89.f) pitch = 89.f;
+
+
+    glm::vec3 front;
+    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    front.y = sin(glm::radians(pitch));
+    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    camFront = glm::normalize(front);
 }
